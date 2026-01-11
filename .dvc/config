@@ -1,4 +1,6 @@
 [core]
-    remote = localcentral
+    remote = local-central
 ['remote "localcentral"']
+    url = E:/Mlops/dvc-central-store
+['remote "local-central"']
     url = E:/Mlops/dvc-central-store
