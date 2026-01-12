@@ -9,8 +9,8 @@ stages:
       size: 6
     - path: src/preprocess.py
       hash: md5
-      md5: 4077eddca8d83525ba371806a9dda33f
-      size: 621
+      md5: 0089f4fc6908fe663c2806433b752340
+      size: 834
     outs:
     - path: data/processed/processed.txt
       hash: md5
