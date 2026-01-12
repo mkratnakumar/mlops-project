@@ -13,3 +13,5 @@ stages:
     - src/train.py
     outs:
     - models/model.txt
+    metrics:
+    - metrics.txt
