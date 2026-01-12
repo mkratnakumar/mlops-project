@@ -11,6 +11,9 @@ stages:
       hash: md5
       md5: 0089f4fc6908fe663c2806433b752340
       size: 834
+    params:
+      params.yaml:
+        preprocess.to_uppercase: false
     outs:
     - path: data/processed/processed.txt
       hash: md5
@@ -27,6 +30,9 @@ stages:
       hash: md5
       md5: b3797b30cbada8c4f7ccbacaddaa0c1f
       size: 450
+    params:
+      params.yaml:
+        train.model_name: simple_text_model
     outs:
     - path: metrics.txt
       hash: md5
