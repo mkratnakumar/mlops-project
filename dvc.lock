@@ -28,8 +28,8 @@ stages:
       size: 35
     - path: src/train.py
       hash: md5
-      md5: b3797b30cbada8c4f7ccbacaddaa0c1f
-      size: 450
+      md5: 6706fa88ebe3a3db3c2379e4426e79d9
+      size: 461
     params:
       params.yaml:
         train.model_name: simple_text_model
