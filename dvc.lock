@@ -9,8 +9,8 @@ stages:
       size: 31
     - path: src/preprocess.py
       hash: md5
-      md5: 0089f4fc6908fe663c2806433b752340
-      size: 834
+      md5: cd4fb507c34b1c815966f996ba782bd0
+      size: 1077
     params:
       params.yaml:
         preprocess.to_uppercase: true
@@ -28,8 +28,8 @@ stages:
       size: 35
     - path: src/train.py
       hash: md5
-      md5: 6706fa88ebe3a3db3c2379e4426e79d9
-      size: 461
+      md5: 2d0e961547a517bef9ef207eb64a12da
+      size: 659
     params:
       params.yaml:
         train.model_name: simple_text_model
@@ -40,5 +40,5 @@ stages:
       size: 17
     - path: models/model.txt
       hash: md5
-      md5: c41c338ca56d73026437ba1548f03b4d
-      size: 59
+      md5: 0465186500d70c9b5c88a0ec59b59da7
+      size: 90
