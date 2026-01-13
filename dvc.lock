@@ -13,18 +13,18 @@ stages:
       size: 834
     params:
       params.yaml:
-        preprocess.to_uppercase: false
+        preprocess.to_uppercase: true
     outs:
     - path: data/processed/processed.txt
       hash: md5
-      md5: ad4f11000b17074bdc2927e201aa5555
+      md5: 0a7566ce1d4df30c9c09eb3d1ee8ef3a
       size: 35
   train:
     cmd: python src/train.py
     deps:
     - path: data/processed/processed.txt
       hash: md5
-      md5: ad4f11000b17074bdc2927e201aa5555
+      md5: 0a7566ce1d4df30c9c09eb3d1ee8ef3a
       size: 35
     - path: src/train.py
       hash: md5
@@ -40,5 +40,5 @@ stages:
       size: 17
     - path: models/model.txt
       hash: md5
-      md5: 78720fda8ee2745925cf2a2b70099141
+      md5: c41c338ca56d73026437ba1548f03b4d
       size: 59
