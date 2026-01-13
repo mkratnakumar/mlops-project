@@ -2,16 +2,21 @@ stages:
   preprocess:
     cmd: python src/preprocess.py
     deps:
-    - data/raw/demo.test
-    - src/preprocess.py
+      - data/raw/demo.test
+      - src/preprocess.py
+    params:
+      - preprocess.to_uppercase
     outs:
-    - data/processed/processed.txt
+      - data/processed/processed.txt
+
   train:
     cmd: python src/train.py
     deps:
-    - data/processed/processed.txt
-    - src/train.py
+      - data/processed/processed.txt
+      - src/train.py
+    params:
+      - train.model_name
     outs:
-    - models/model.txt
+      - models/model.txt
     metrics:
-    - metrics.txt
+      - metrics.txt
