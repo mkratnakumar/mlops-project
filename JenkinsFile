@@ -1,1 +1,26 @@
 
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'master', url: 'https://github.com/mkratnakumar/mlops-project.git'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Run DVC Pipeline') {
+            steps {
+                sh 'dvc repro'
+            }
+        }
+        stage('Show Metrics') {
+            steps {
+                sh 'dvc metrics show'
+            }
+        }
+    }
+}
