@@ -1,25 +1,76 @@
 pipeline {
     agent any
+
+    environment {
+        VENV_DIR = "venv"
+    }
+
     stages {
-        stage('Checkout') {
+
+        stage('Checkout Code') {
             steps {
-                git branch: 'master', url: 'https://github.com/mkratnakumar/mlops-project.git'
+                checkout scm
             }
         }
+
+        stage('Install Python') {
+            steps {
+                sh '''
+                if ! command -v python3 >/dev/null 2>&1; then
+                    echo "Python not found. Installing..."
+                    sudo apt-get update
+                    sudo apt-get install -y python3 python3-venv python3-pip
+                else
+                    echo "Python already installed"
+                fi
+                python3 --version
+                '''
+            }
+        }
+
+        stage('Create Virtual Environment') {
+            steps {
+                sh '''
+                python3 -m venv ${VENV_DIR}
+                '''
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh '''
+                . ${VENV_DIR}/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                '''
             }
         }
+
         stage('Run DVC Pipeline') {
             steps {
-                sh 'dvc repro'
+                sh '''
+                . ${VENV_DIR}/bin/activate
+                dvc repro
+                '''
             }
         }
+
         stage('Show Metrics') {
             steps {
-                sh 'dvc metrics show'
+                sh '''
+                . ${VENV_DIR}/bin/activate
+                dvc metrics show
+                '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ CI/CD Pipeline completed successfully"
+        }
+        failure {
+            echo "❌ CI/CD Pipeline failed"
         }
     }
 }
