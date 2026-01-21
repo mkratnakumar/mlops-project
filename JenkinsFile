@@ -29,6 +29,7 @@ pipeline {
         stage('Install Python Dependencies (User Space)') {
             steps {
                 sh '''
+                pythong install pip3
                 pip3 install --user --upgrade pip
                 pip3 install --user -r requirements.txt
                 pip3 install --user dvc
