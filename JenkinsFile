@@ -1,86 +1,66 @@
 pipeline {
     agent any
- 
+
+    environment {
+        PIP_USER_BIN = "$HOME/.local/bin"
+    }
+
     stages {
- 
-        stage('Checkout') {
+
+        stage('Checkout Code') {
             steps {
                 git branch: 'master',
                     url: 'https://github.com/mkratnakumar/mlops-project.git'
             }
         }
- 
+
         stage('Ensure Python Installed') {
             steps {
                 sh '''
-                if ! command -v python3 >/dev/null 2>&1; then
-                    echo "Python not found. Installing..."
-                    sudo apt-get update
-                    sudo apt-get install -y python3 python3.10-venv python3-pip
-                    
-                else
-                    echo "Python already installed"
-                fi
+                command -v python3 >/dev/null 2>&1 || {
+                  echo "❌ Python3 not installed on Jenkins node"
+                  exit 1
+                }
                 python3 --version
                 '''
             }
         }
- 
-        stage('Setup Environment') {
+
+        stage('Install Python Dependencies (User Space)') {
             steps {
                 sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-                pip install --upgrade pip
-                pip install -r requirements.txt
-                pip install dvc
+                pip3 install --user --upgrade pip
+                pip3 install --user -r requirements.txt
+                pip3 install --user dvc
                 '''
             }
         }
- 
-        stage('DVC Pull') {
+
+        stage('Run DVC Pipeline') {
             steps {
                 sh '''
-                . venv/bin/activate
-                dvc pull
-                '''
-            }
-        }
- 
-        stage('Run Pipeline') {
-            steps {
-                sh '''
-                . venv/bin/activate
+                export PATH=$PATH:$HOME/.local/bin
                 dvc repro
                 '''
             }
         }
- 
-        stage('Metrics Check') {
+
+        stage('Show Metrics') {
             steps {
                 sh '''
-                . venv/bin/activate
-                dvc metrics diff || true
-                '''
-            }
-        }
- 
-        stage('DVC Push') {
-            steps {
-                sh '''
-                . venv/bin/activate
-                dvc push
+                export PATH=$PATH:$HOME/.local/bin
+                dvc metrics show
                 '''
             }
         }
     }
- 
+
     post {
         success {
-            echo "✅ MLOps pipeline completed successfully"
+            echo "✅ MLOps CI/CD pipeline completed successfully"
         }
         failure {
-            echo "❌ MLOps pipeline failed"
+            echo "❌ MLOps CI/CD pipeline failed"
         }
     }
 }
