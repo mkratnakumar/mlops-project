@@ -1,94 +1,81 @@
 pipeline {
     agent any
- 
+
+    environment {
+        USER_BIN = "$HOME/.local/bin"
+    }
+
     stages {
- 
-        stage('Checkout') {
+
+        stage('Checkout Code') {
             steps {
                 git branch: 'master',
                     url: 'https://github.com/mkratnakumar/mlops-project.git'
             }
         }
- 
-        stage('Ensure Python & Pip Installed') {
+
+        stage('Verify Python') {
             steps {
                 sh '''
-                set -e
- 
-                if ! command -v python3 >/dev/null 2>&1; then
-                    echo "Python not found. Installing..."
-                    sudo apt-get update
-                    sudo apt-get install -y python3 python3-venv
-                else
-                    echo "Python already installed"
-                fi
- 
-                # Ensure pip exists
-                python3 -m ensurepip --upgrade || true
-                python3 -m pip3 install --upgrade pip3
- 
+                command -v python3 >/dev/null 2>&1 || {
+                    echo "❌ python3 not installed"
+                    exit 1
+                }
                 python3 --version
-                python3 -m pip3 --version
                 '''
             }
         }
- 
-        stage('Setup Virtual Environment') {
+
+        stage('Verify pip3') {
             steps {
                 sh '''
-                set -e
- 
-                python3 -m venv venv
-                . venv/bin/activate
-                
-                python3 -m ensurepip --upgrade
-                python3 -m pip3 install --upgrade pip
-                python3 -m pip3 install -r requirements.txt
-                python3 -m pip3 install dvc
+                command -v pip3 >/dev/null 2>&1 || {
+                    echo "❌ pip3 not installed (admin action required)"
+                    exit 1
+                }
+                pip3 --version
                 '''
             }
         }
- 
-        stage('DVC Pull') {
+
+        stage('Install Dependencies (User Space)') {
             steps {
                 sh '''
-                set -e
-                . venv/bin/activate
-                dvc pull
+                pip3 install --user --upgrade pip
+                pip3 install --user -r requirements.txt
+                pip3 install --user dvc
                 '''
             }
         }
- 
+
         stage('Run DVC Pipeline') {
             steps {
                 sh '''
-                set -e
-                . venv/bin/activate
+                export PATH=$PATH:$HOME/.local/bin
                 dvc repro
                 '''
             }
         }
- 
-        stage('Metrics Check') {
+
+        stage('Show Metrics') {
             steps {
                 sh '''
-                . venv/bin/activate
-                dvc metrics diff || true
+                export PATH=$PATH:$HOME/.local/bin
+                dvc metrics show
                 '''
             }
         }
- 
+
         stage('DVC Push') {
             steps {
                 sh '''
-                set -e
-                . venv/bin/activate
+                export PATH=$PATH:$HOME/.local/bin
                 dvc push
                 '''
             }
         }
     }
- 
+
     post {
         success {
             echo "✅ MLOps pipeline completed successfully"
