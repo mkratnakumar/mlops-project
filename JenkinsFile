@@ -29,15 +29,15 @@ pipeline {
         stage('Verify pip3') {
             steps {
                 sh '''
-                command -v pip3 >/dev/null 2>&1 || {
-                    echo "❌ pip3 not installed (admin action required)"
-                    exit 1
-                }
-                pip3 --version
-                '''
+                if ! command -v pip3 >/dev/null 2>&1; then
+                echo "❌ pip3 is not installed on this Jenkins node"
+                echo "👉 Action required: sudo apt install python3-pip"
+                exit 1
+            fi
+            pip3 --version
+            '''
             }
         }
-
         stage('Install Dependencies (User Space)') {
             steps {
                 sh '''
