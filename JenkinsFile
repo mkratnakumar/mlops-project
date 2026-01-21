@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.10-slim'
-            args '-u root'
-        }
-    }
+    agent any
 
     environment {
         VENV_DIR = "venv"
@@ -19,27 +14,30 @@ pipeline {
             }
         }
 
-        stage('Verify Python') {
+        stage('Check Python Availability') {
             steps {
                 sh '''
-                python --version
-                pip --version
+                if ! command -v python3 >/dev/null 2>&1; then
+                    echo "❌ Python3 not available on Jenkins agent"
+                    exit 1
+                fi
+                python3 --version
                 '''
             }
         }
 
-        stage('Install System Dependencies') {
+        stage('Create Virtual Environment') {
             steps {
                 sh '''
-                apt-get update
-                apt-get install -y git
+                python3 -m venv ${VENV_DIR}
                 '''
             }
         }
 
-        stage('Install Python Dependencies') {
+        stage('Install Dependencies') {
             steps {
                 sh '''
+                . ${VENV_DIR}/bin/activate
                 pip install --upgrade pip
                 pip install -r requirements.txt
                 pip install dvc
@@ -50,6 +48,7 @@ pipeline {
         stage('Run DVC Pipeline') {
             steps {
                 sh '''
+                . ${VENV_DIR}/bin/activate
                 dvc repro
                 '''
             }
@@ -58,6 +57,7 @@ pipeline {
         stage('Show Metrics') {
             steps {
                 sh '''
+                . ${VENV_DIR}/bin/activate
                 dvc metrics show
                 '''
             }
