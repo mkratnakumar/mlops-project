@@ -5,8 +5,8 @@ pipeline {
  
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Shravani3001/mlops-project.git'
+                git branch: 'master',
+                    url: 'https://github.com/mkratnakumar/mlops-project.git'
             }
         }
  
