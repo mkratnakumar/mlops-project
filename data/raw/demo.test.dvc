@@ -1,0 +1,5 @@
+outs:
+- md5: 76b88dc6773ed67018f357efef4058a4
+  size: 16
+  hash: md5
+  path: demo.test

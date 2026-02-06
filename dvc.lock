@@ -5,8 +5,8 @@ stages:
     deps:
     - path: data/raw/demo.test
       hash: md5
-      md5: 5c0acad898aa9ad1f6414fe89cbf11e9
-      size: 12
+      md5: 76b88dc6773ed67018f357efef4058a4
+      size: 16
     - path: src/preprocess.py
       hash: md5
       md5: e67ba3c3d46d03fe44ff62827cdafeac
@@ -17,28 +17,40 @@ stages:
     outs:
     - path: data/processed/processed.txt
       hash: md5
-      md5: eb034dedec1bbbe74bd7f10f711c605f
-      size: 13
+      md5: 26d38ead7c371275fbdcdadd040f88e3
+      size: 17
   train:
     cmd: python src/train.py
     deps:
     - path: data/processed/processed.txt
       hash: md5
-      md5: eb034dedec1bbbe74bd7f10f711c605f
-      size: 13
+      md5: 26d38ead7c371275fbdcdadd040f88e3
+      size: 17
     - path: src/train.py
       hash: md5
-      md5: 2f71da124ad02d5dcfad5ba3ab6e3b9c
-      size: 690
+      md5: bebcf459b220230ffec5969225d0fcfb
+      size: 735
     params:
       params.yaml:
         train.model_name: simple_text_model
     outs:
     - path: metrics.txt
       hash: md5
-      md5: 3ef3cdd9a3dca9805025c82fad164a39
+      md5: 35bf6f6e5e0539cbd53acc1d5a37b57e
       size: 17
-    - path: models/model.txt
+    - path: models/staging/model.txt
       hash: md5
-      md5: 68a752f47197f5d47e12e135073ad494
-      size: 68
+      md5: a5affe81b5dc70740ce83ce1614f45d0
+      size: 72
+  promote:
+    cmd: python scripts/promote_model.py
+    deps:
+    - path: models/staging/model.txt
+      hash: md5
+      md5: a5affe81b5dc70740ce83ce1614f45d0
+      size: 72
+    outs:
+    - path: models/production/model.txt
+      hash: md5
+      md5: a5affe81b5dc70740ce83ce1614f45d0
+      size: 72
