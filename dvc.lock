@@ -5,40 +5,40 @@ stages:
     deps:
     - path: data/raw/demo.test
       hash: md5
-      md5: 2bcb0bce2a292d54d833fe988b16e700
-      size: 52
+      md5: 5c0acad898aa9ad1f6414fe89cbf11e9
+      size: 12
     - path: src/preprocess.py
       hash: md5
-      md5: cd4fb507c34b1c815966f996ba782bd0
-      size: 1077
+      md5: e67ba3c3d46d03fe44ff62827cdafeac
+      size: 1117
     params:
       params.yaml:
         preprocess.to_uppercase: true
     outs:
     - path: data/processed/processed.txt
       hash: md5
-      md5: afc8ff9ba93be015b738efbc18de8999
-      size: 59
+      md5: eb034dedec1bbbe74bd7f10f711c605f
+      size: 13
   train:
     cmd: python src/train.py
     deps:
     - path: data/processed/processed.txt
       hash: md5
-      md5: afc8ff9ba93be015b738efbc18de8999
-      size: 59
+      md5: eb034dedec1bbbe74bd7f10f711c605f
+      size: 13
     - path: src/train.py
       hash: md5
-      md5: 2d0e961547a517bef9ef207eb64a12da
-      size: 659
+      md5: 2f71da124ad02d5dcfad5ba3ab6e3b9c
+      size: 690
     params:
       params.yaml:
         train.model_name: simple_text_model
     outs:
     - path: metrics.txt
       hash: md5
-      md5: 01fe7025560389b4ea3c387bacd31434
+      md5: 3ef3cdd9a3dca9805025c82fad164a39
       size: 17
     - path: models/model.txt
       hash: md5
-      md5: 619a937547579678e62c9142ae35bb40
-      size: 114
+      md5: 68a752f47197f5d47e12e135073ad494
+      size: 68
