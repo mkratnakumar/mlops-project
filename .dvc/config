@@ -1,5 +1,7 @@
 [core]
-    remote = local-central
     autostage = true
+    remote = s3remote
 ['remote "local-central"']
     url = E:/Mlops/dvc-central-store
+['remote "s3remote"']
+    url = s3://my-mlops-artifacts-123456/dvc
