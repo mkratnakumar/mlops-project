@@ -1,11 +1,11 @@
-import os
 import yaml
+from pathlib import Path
 
 processed_path = "data/processed/processed.txt"
-model_path = "models/model.txt"
+model_path = Path("models/staging/model.txt")
 metrics_path = "metrics.txt"
 
-os.makedirs("models", exist_ok=True)
+model_path.parent.mkdir(parents=True, exist_ok=True)
 
 # Load params.yaml
 with open("params.yaml", "r") as f:

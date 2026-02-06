@@ -17,6 +17,13 @@ stages:
     params:
       - train.model_name
     outs:
-      - models/model.txt
+      - models/staging/model.txt
     metrics:
       - metrics.txt
+
+  promote:
+    cmd: python scripts/promote_model.py
+    deps:
+      - models/staging/model.txt
+    outs:
+      - models/production/model.txt
