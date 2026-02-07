@@ -24,7 +24,6 @@ pipeline {
                     sh '''
                         python3 --version
                         pip3 --version
-                        dvc --version
                         aws sts get-caller-identity
                     '''
                 }
@@ -34,8 +33,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
+                    pip3 install --user --upgrade pip
                     pip3 install --user -r requirements.txt
-                    pip3 install --user dvc
+                    pip3 install --user "dvc[s3]"
                 '''
             }
         }
@@ -109,10 +109,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ MLOps pipeline completed successfully"
+            echo "MLOps pipeline completed successfully"
         }
         failure {
-            echo "❌ MLOps pipeline failed"
+            echo "MLOps pipeline failed"
         }
     }
 }
