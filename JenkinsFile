@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         USER_BIN = "$HOME/.local/bin"
+        PATH = "$PATH:$HOME/.local/bin"
     }
 
     stages {
@@ -14,64 +15,94 @@ pipeline {
             }
         }
 
-        stage('Verify Python') {
+        stage('Verify Environment & AWS Access') {
             steps {
-                sh '''
-                command -v python3 >/dev/null 2>&1 || {
-                    echo "❌ python3 not installed"
-                    exit 1
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-access-key'
+                ]]) {
+                    sh '''
+                        python3 --version
+                        pip3 --version
+                        dvc --version
+                        aws sts get-caller-identity
+                    '''
                 }
-                python3 --version
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    pip3 install --user -r requirements.txt
+                    pip3 install --user dvc
                 '''
             }
         }
 
-        stage('Verify pip3') {
+        stage('DVC Pull (from S3)') {
             steps {
-                sh '''
-                if ! command -v pip3 >/dev/null 2>&1; then
-                echo "❌ pip3 is not installed on this Jenkins node"
-                echo "👉 Action required: sudo apt install python3-pip"
-                exit 1
-            fi
-            pip3 --version
-            '''
-            }
-        }
-        stage('Install Dependencies (User Space)') {
-            steps {
-                sh '''
-                pip3 install --user --upgrade pip
-                pip3 install --user -r requirements.txt
-                pip3 install --user dvc
-                '''
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-access-key'
+                ]]) {
+                    sh '''
+                        dvc pull
+                    '''
+                }
             }
         }
 
-        stage('Run DVC Pipeline') {
+        stage('Train Model (Staging)') {
             steps {
-                sh '''
-                export PATH=$PATH:$HOME/.local/bin
-                dvc repro
-                '''
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-access-key'
+                ]]) {
+                    sh '''
+                        dvc repro
+                    '''
+                }
             }
         }
 
         stage('Show Metrics') {
             steps {
                 sh '''
-                export PATH=$PATH:$HOME/.local/bin
-                dvc metrics show
+                    dvc metrics show
                 '''
             }
         }
 
-        stage('DVC Push') {
+        stage('Approve Promotion') {
             steps {
-                sh '''
-                export PATH=$PATH:$HOME/.local/bin
-                dvc push
-                '''
+                input message: 'Approve promotion of model to PRODUCTION?'
+            }
+        }
+
+        stage('Promote Model (Production)') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-access-key'
+                ]]) {
+                    sh '''
+                        dvc repro promote
+                    '''
+                }
+            }
+        }
+
+        stage('Push Artifacts to S3') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-access-key'
+                ]]) {
+                    sh '''
+                        dvc push
+                    '''
+                }
             }
         }
     }
