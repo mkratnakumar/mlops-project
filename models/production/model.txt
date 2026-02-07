@@ -1,3 +1,0 @@
-Model name: simple_text_model
-Model trained on data:
-SAMPLE RAW DATA
