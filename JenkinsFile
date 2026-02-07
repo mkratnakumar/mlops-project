@@ -79,19 +79,10 @@ pipeline {
                 input message: 'Approve promotion of model to PRODUCTION?'
             }
         }
-
-        stage('Promote Model (Production)') {
-            steps {
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-access-key'
-                ]]) {
-                    sh '''
-                        dvc repro promote
-                    '''
-                }
-            }
-        }
+        stage('Promote Model (Production)'){
+           steps { 
+             withCredentials([[ $class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-access-key' ]]) { sh ''' dvc repro -s promote ''' } } }
+        
 
         stage('Push Artifacts to S3') {
             steps {
