@@ -1,6 +1,6 @@
 stages:
   preprocess:
-    cmd: python src/preprocess.py
+    cmd: python3 src/preprocess.py
     deps:
       - data/raw/demo.test
       - src/preprocess.py
@@ -10,7 +10,7 @@ stages:
       - data/processed/processed.txt
 
   train:
-    cmd: python src/train.py
+    cmd: python3 src/train.py
     deps:
       - data/processed/processed.txt
       - src/train.py
@@ -22,7 +22,7 @@ stages:
       - metrics.txt
 
   promote:
-    cmd: python scripts/promote_model.py
+    cmd: python3 scripts/promote_model.py
     deps:
       - models/staging/model.txt
     outs:
