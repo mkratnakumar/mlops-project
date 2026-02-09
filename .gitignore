@@ -1,4 +1,7 @@
 data/processed/
-models/
 /metrics.txt
+venv/
+.env/
+__pycache__/
+
 
